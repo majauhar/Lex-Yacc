@@ -6,6 +6,7 @@ digits		[0-9]
 %}
 %%
 {letters}({letters}|{digits})*	count++;
+.				; /*if the corresponding rule is not defined, the default action is to match everything and copy it to output*/
 %%
 
 int main() {
