@@ -5,13 +5,20 @@
 %}
 
 %%
-[0-9]+      {
+[a-z]+		    {
+		        yylval = *yytext - 'a';
+		        return VARIABLE;
+		        }
+
+[0-9]+     	    {
                 yylval = atoi(yytext);
                 return INTEGER;
-            }
-[-+\n]      return *yytext;
-[ \t]       ;
-.           yyerror("Invalid Character");
+           	    }
+
+[-+()=/*%\n]     {  return *yytext; }
+
+[ \t;]           ;
+.               yyerror("Invalid Character");
 %%
 
 int yywrap() {

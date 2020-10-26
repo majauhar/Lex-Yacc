@@ -2,26 +2,39 @@
 	#include <stdio.h>
 	int yylex(void);
 	void yyerror(char *);
+	int yylex();
+	int sym[26];
 %}
 
-%token INTEGER
-/* #ifndef YYSTYPE
-#define YYSTYPE int
-#endif
-#define INTEGER 258
-extern YYSTYPE yylval; */
+%token INTEGER VARIABLE
+%left '+' '-'
+%left '*' '/' '%'
 
 %%
 
 program:
-    program expr '\n'	{ printf("%d\n", $2); }
+    program statement '\n'	/* does nothing */
 	|
 	;
 
-expr:
-    INTEGER			    { $$ = $1; }
-	| expr '+' expr		{ $$ = $1 + $3; }
-	| expr '-' expr		{ $$ = $1 - $3; }
+statement:
+    expr			        { printf("%d\n", $1); }
+	| VARIABLE '=' expr	    { sym[$1] = $3; }
+	;
+
+expr:                   /* E -> id */
+    INTEGER
+	| VARIABLE		        { $$ = sym[$1]; }
+                        /* E -> E + E */
+    | expr '+' expr		    { $$ = $1 + $3; }
+                        /* E -> E - E */
+	| expr '-' expr		    { $$ = $1 - $3; }
+                        /* E = E * E */
+	| expr '*' expr		    { $$ = $1 * $3; }
+                        /* E = E / E */
+	| expr '/' expr		    { $$ = $1 / $3; }
+    | expr '%' expr         { $$ = $1 % $3; }
+	| '(' expr ')'		    { $$ = $2; }
 	;
 
 %%
